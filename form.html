@@ -919,9 +919,11 @@ function _drawCostumeCards(grid){
 
       if(imgs.length>1){
         const prev=document.createElement('button');
+        prev.type='button';
         prev.innerHTML='&#8249;';
         prev.style.cssText='position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.85);border:none;border-radius:50%;width:26px;height:26px;font-size:18px;cursor:pointer;line-height:1;padding:0;z-index:3;';
         const next=document.createElement('button');
+        next.type='button';
         next.innerHTML='&#8250;';
         next.style.cssText='position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.85);border:none;border-radius:50%;width:26px;height:26px;font-size:18px;cursor:pointer;line-height:1;padding:0;z-index:3;';
         const dots=document.createElement('div');
