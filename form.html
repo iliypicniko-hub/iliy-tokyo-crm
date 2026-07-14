@@ -155,8 +155,29 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
     <div class="field"><label>名（ふりがな）<span class="req">*</span></label><input type="text" id="mei_kana" placeholder="はなこ" autocomplete="new-password"></div>
   </div>
   <div class="field"><label>電話番号<span class="req">*</span></label><input type="tel" id="tel-input" placeholder="09012345678" style="max-width:260px;" oninput="normalizeTel(this)" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" pattern="[0-9]*"></div>
-  <div class="field"><label>ご予約日<span class="req">*</span></label><input type="date" id="booking_date" style="max-width:200px;"></div>
-  <div class="field" id="booking-time-field" style="display:none;"><label>撮影時間</label><input type="text" id="booking_time" readonly style="max-width:120px;background:#f9f6f3;"></div>
+  <div class="row2">
+    <div class="field"><label>ご予約日<span class="req">*</span></label><input type="date" id="booking_date"></div>
+    <div class="field" id="booking-time-field"><label>撮影時間</label>
+      <select id="booking_time">
+        <option value="">選択してください</option>
+        <option value="10:00">10:00</option>
+        <option value="10:30">10:30</option>
+        <option value="11:00">11:00</option>
+        <option value="11:30">11:30</option>
+        <option value="12:00">12:00</option>
+        <option value="12:30">12:30</option>
+        <option value="13:00">13:00</option>
+        <option value="13:30">13:30</option>
+        <option value="14:00">14:00</option>
+        <option value="14:30">14:30</option>
+        <option value="15:00">15:00</option>
+        <option value="15:30">15:30</option>
+        <option value="16:00">16:00</option>
+        <option value="16:30">16:30</option>
+        <option value="17:00">17:00</option>
+      </select>
+    </div>
+  </div>
 
   <div class="sec-label">撮影プラン</div>
   <div class="field">
@@ -166,6 +187,7 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
       <label class="chip"><input type="checkbox" name="plan" value="maternity"> マタニティー</label>
       <label class="chip"><input type="checkbox" name="plan" value="adult"> オトナ</label>
       <label class="chip"><input type="checkbox" name="plan" value="753"> 七五三</label>
+      <label class="chip"><input type="checkbox" name="plan" value="other"> その他</label>
     </div>
     <div id="sub-baby" class="sub-box" style="display:none;">
       <div class="sub-box-label">撮影プランの詳細を教えてください</div>
@@ -173,10 +195,15 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
         <label class="chip"><input type="checkbox" name="baby_type"> 100日記念</label>
         <label class="chip"><input type="checkbox" name="baby_type"> ハーフバースデー</label>
         <label class="chip"><input type="checkbox" name="baby_type"> 1stバースデー</label>
-        <label class="chip"><input type="checkbox" name="baby_type"> 2歳以上バースデー</label>
+        <label class="chip"><input type="checkbox" name="baby_type"> 2ndバースデー</label>
+        <label class="chip"><input type="checkbox" name="baby_type"> 3歳以上バースデー</label>
         <label class="chip"><input type="checkbox" name="baby_type"> 入園・入学記念</label>
         <label class="chip"><input type="checkbox" name="baby_type"> 1/2成人式</label>
-        <label class="chip"><input type="checkbox" name="baby_type"> その他</label>
+        <label class="chip"><input type="checkbox" name="baby_type" id="baby_type_other" onchange="toggleOtherDetail('baby_type_other','baby-type-other-detail')"> その他</label>
+      </div>
+      <div id="baby-type-other-detail" class="sub-box" style="display:none;margin-top:0.6rem;">
+        <div class="sub-box-label">「その他」の内容を教えてください<span class="note-txt" style="margin-left:6px;">任意</span></div>
+        <input type="text" id="baby-type-other-input" placeholder="ご自由にお書きください">
       </div>
     </div>
     <div id="sub-adult" class="sub-box" style="display:none;">
@@ -185,7 +212,22 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
         <label class="chip"><input type="checkbox" name="adult_type"> 結婚記念日</label>
         <label class="chip"><input type="checkbox" name="adult_type"> カップル撮影</label>
         <label class="chip"><input type="checkbox" name="adult_type"> 成人式</label>
-        <label class="chip"><input type="checkbox" name="adult_type"> その他</label>
+        <label class="chip"><input type="checkbox" name="adult_type" id="adult_type_other" onchange="toggleOtherDetail('adult_type_other','adult-type-other-detail')"> その他</label>
+      </div>
+      <div id="adult-type-other-detail" class="sub-box" style="display:none;margin-top:0.6rem;">
+        <div class="sub-box-label">「その他」の内容を教えてください<span class="note-txt" style="margin-left:6px;">任意</span></div>
+        <input type="text" id="adult-type-other-input" placeholder="ご自由にお書きください">
+      </div>
+    </div>
+    <div id="sub-other" class="sub-box" style="display:none;">
+      <div class="sub-box-label">撮影プランの詳細を教えてください</div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="other_type"> ペットの記念日</label>
+        <label class="chip"><input type="checkbox" name="other_type" id="other_type_other" onchange="toggleOtherDetail('other_type_other','other-type-other-detail')"> その他</label>
+      </div>
+      <div id="other-type-other-detail" class="sub-box" style="display:none;margin-top:0.6rem;">
+        <div class="sub-box-label">「その他」の内容を教えてください<span class="note-txt" style="margin-left:6px;">任意</span></div>
+        <input type="text" id="other-type-other-input" placeholder="ご自由にお書きください">
       </div>
     </div>
   </div>
@@ -198,6 +240,18 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
   </div>
 
   <div id="members-section"></div>
+
+  <div class="sec-label">SNS掲載可否<span class="req" style="font-size:11px;letter-spacing:0;margin-left:4px;">*</span></div>
+  <div class="field">
+    <div class="chips">
+      <label class="chip"><input type="radio" name="sns_ok" value="OK"> OK</label>
+      <label class="chip"><input type="radio" name="sns_ok" value="こどものみOK"> こどものみOK</label>
+      <label class="chip"><input type="radio" name="sns_ok" value="ペットのみOK"> ペットのみOK</label>
+      <label class="chip"><input type="radio" name="sns_ok" value="掲載NG"> 掲載NG</label>
+      <label class="chip"><input type="radio" name="sns_ok" value="当日判断"> 当日判断</label>
+      <label class="chip"><input type="radio" name="sns_ok" value="一部OK"> 一部OK</label>
+    </div>
+  </div>
 
   <div class="sec-label">ご来店回数<span class="req" style="font-size:11px;letter-spacing:0;margin-left:4px;">*</span></div>
   <div class="field">
@@ -212,9 +266,12 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
   <div class="field">
     <label><span class="note-txt" style="margin-left:0;">複数可</span></label>
     <div class="chips">
-      <label class="chip"><input type="checkbox" name="source" value="picniko"> 過去PICNIKOにて撮影</label>
-      <label class="chip"><input type="checkbox" name="source" value="instagram"> Instagram</label>
+      <label class="chip"><input type="checkbox" name="source" value="iliy_past"> 過去iliyにて撮影</label>
+      <label class="chip"><input type="checkbox" name="source" value="picniko"> 過去PICNIKOにて撮影（wedding）</label>
+      <label class="chip"><input type="checkbox" name="source" value="instagram_search"> Instagram検索</label>
+      <label class="chip"><input type="checkbox" name="source" value="instagram_ad"> Instagram広告・おすすめ</label>
       <label class="chip"><input type="checkbox" name="source" value="threads"> Threads</label>
+      <label class="chip"><input type="checkbox" name="source" value="tiktok"> TikTok</label>
       <label class="chip"><input type="checkbox" name="source" value="influencer" onchange="toggleInfluencer()"> インフルエンサーの投稿</label>
       <label class="chip"><input type="checkbox" name="source" value="search"> ネット検索</label>
       <label class="chip"><input type="checkbox" name="source" value="friend"> 知人の紹介</label>
@@ -419,20 +476,18 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
 
 <script>
 // ===== Google Apps Script 連携設定 =====
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwgVbTXDClMKBob_cyDrvE_NhCqaQB3J0l0i7JQ6yqyM3dCHq1hsMz7WUGHVDF7fnr7Qg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxJzArnwbYBLJ8rLCPrNEBFgyvHzAZ6T8UMpcoRRG8PPgH-GdVfqRHJ95sQRPgZ71NrFg/exec';
 
 (function(){
   const p=new URLSearchParams(location.search);
   const s=function(id,key){const el=document.getElementById(id);if(el&&p.get(key)){el.value=p.get(key);el.readOnly=true;}};
   s('sei','sei');s('mei','mei');s('sei_kana','sei_kana');s('mei_kana','mei_kana');s('booking_date','date');
-  // 時間パラメータの読み込みと表示
+  // 時間パラメータがあり、選択肢（10:00〜17:00・30分刻み）に一致すれば自動選択
   const timeVal=p.get('time');
   if(timeVal){
     const timeEl=document.getElementById('booking_time');
-    const timeField=document.getElementById('booking-time-field');
-    if(timeEl && timeField){
-      timeEl.value=timeVal==='other'?'その他':timeVal+'〜';
-      timeField.style.display='';
+    if(timeEl && [...timeEl.options].some(o=>o.value===timeVal)){
+      timeEl.value=timeVal;
     }
   }
 })();
@@ -441,8 +496,10 @@ document.querySelectorAll('input[name="plan"]').forEach(function(r){
   r.addEventListener('change',function(){
     const babyChecked=document.querySelector('input[name="plan"][value="baby"]').checked;
     const adultChecked=document.querySelector('input[name="plan"][value="adult"]').checked;
+    const otherChecked=document.querySelector('input[name="plan"][value="other"]').checked;
     document.getElementById('sub-baby').style.display=babyChecked?'block':'none';
     document.getElementById('sub-adult').style.display=adultChecked?'block':'none';
+    document.getElementById('sub-other').style.display=otherChecked?'block':'none';
   });
 });
 
@@ -453,6 +510,25 @@ function toggleInfluencer(){
 function toggleSourceOther(){
   const checked=document.querySelector('input[name="source"][value="other"]')?.checked;
   document.getElementById('source-other-detail').style.display=checked?'block':'none';
+}
+function toggleOtherDetail(checkboxId, detailId){
+  const checked=document.getElementById(checkboxId)?.checked;
+  const box=document.getElementById(detailId);
+  if(box) box.style.display=checked?'block':'none';
+}
+// 各撮影プランの「その他」で自由記述された内容をまとめて1つの文字列にする
+function getPlanOtherDetail(){
+  const parts=[];
+  const babyOther=document.getElementById('baby_type_other')?.checked;
+  const babyOtherTxt=document.getElementById('baby-type-other-input')?.value?.trim();
+  if(babyOther && babyOtherTxt) parts.push(`ベビー・キッズ：${babyOtherTxt}`);
+  const adultOther=document.getElementById('adult_type_other')?.checked;
+  const adultOtherTxt=document.getElementById('adult-type-other-input')?.value?.trim();
+  if(adultOther && adultOtherTxt) parts.push(`オトナ：${adultOtherTxt}`);
+  const otherTypeOther=document.getElementById('other_type_other')?.checked;
+  const otherTypeOtherTxt=document.getElementById('other-type-other-input')?.value?.trim();
+  if(otherTypeOther && otherTypeOtherTxt) parts.push(`その他：${otherTypeOtherTxt}`);
+  return parts.join('／');
 }
 function normalizeTel(el){
   if(el.dataset.composing === '1') return;
@@ -518,6 +594,16 @@ function validatePage(pageId){
       err.textContent='撮影プランを選択してください';ok=false;
     } else {
       const e=document.querySelector('input[name="plan"]').closest('.field').querySelector('.v-err-chips');
+      if(e)e.remove();
+    }
+    // SNS掲載可否
+    if(!document.querySelector('input[name="sns_ok"]:checked')){
+      const wrap=document.querySelector('input[name="sns_ok"]').closest('.field');
+      let err=wrap.querySelector('.v-err-chips');
+      if(!err){err=document.createElement('p');err.className='v-err-chips';err.style.cssText='font-size:11px;color:#c0392b;margin-top:6px;';wrap.appendChild(err);}
+      err.textContent='SNS掲載可否を選択してください';ok=false;
+    } else {
+      const e=document.querySelector('input[name="sns_ok"]').closest('.field').querySelector('.v-err-chips');
       if(e)e.remove();
     }
     // Visit count
@@ -1024,14 +1110,16 @@ function goToConfirm(){
   const radioLabel = name => document.querySelector(`input[name="${name}"]:checked`)?.parentElement?.textContent?.trim() || '—';
   const checks = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el=>el.parentElement.textContent.trim()).join('、') || '—';
 
-  const planMap={'baby':'ベビー・キッズ','maternity':'マタニティー','adult':'オトナ','753':'七五三'};
+  const planMap={'baby':'ベビー・キッズ','maternity':'マタニティー','adult':'オトナ','753':'七五三','other':'その他'};
   const planVals = Array.from(document.querySelectorAll('input[name="plan"]:checked')).map(el=>el.value);
   const planLabels = planVals.map(v=>planMap[v]).filter(Boolean);
   const babyTypes = checks('baby_type');
   const adultTypes = checks('adult_type');
+  const otherTypes = checks('other_type');
   let planStr = planLabels.join('、') || '—';
   if(planVals.includes('baby') && babyTypes!=='—') planStr += ` / ${babyTypes}`;
   if(planVals.includes('adult') && adultTypes!=='—') planStr += ` / ${adultTypes}`;
+  if(planVals.includes('other') && otherTypes!=='—') planStr += ` / ${otherTypes}`;
   const flowerYes = radio('flower')==='yes';
   const rentalYes = radio('rental')==='yes';
 
@@ -1039,13 +1127,16 @@ function goToConfirm(){
   const children = parseInt(document.getElementById('cnt-child')?.value||0);
   const pets = parseInt(document.getElementById('cnt-pet')?.value||0);
 
+  const planOtherDetail=getPlanOtherDetail();
   let rows = [
     ['代表者', `${get('sei')} ${get('mei')}（${get('sei_kana')} ${get('mei_kana')}）`],
     ['電話番号', document.querySelector('input[type=tel]')?.value||'—'],
     ['ご予約日', get('booking_date')||'—'],
     ...(document.getElementById('booking_time')?.value ? [['撮影時間', document.getElementById('booking_time').value]] : []),
     ['撮影プラン', planStr],
+    ...(planOtherDetail ? [['プラン「その他」の内容', planOtherDetail]] : []),
     ['来店人数', [adults>0?`大人 ${adults}名`:'', children>0?`こども ${children}名`:'', pets>0?`ペット ${pets}匹`:''].filter(Boolean).join('　')],
+    ['SNS掲載可否', radio('sns_ok')||'—'],
     ['ご来店回数', radio('visit_count')||'—'],
     ['ご来店のきっかけ', checks('source')],
   ];
@@ -1181,23 +1272,24 @@ function uploadPhotosToGAS(token, boxNum, kind){
   return chain;
 }
 
-document.getElementById('f').addEventListener('submit',function(e){
+document.getElementById('f').addEventListener('submit', async function(e){
   e.preventDefault();
   try {
 
-  // Save response to LocalStorage
   const get = id => document.getElementById(id)?.value || '';
   const radio = name => document.querySelector(`input[name="${name}"]:checked`)?.value || '';
   const radioLabel = name => document.querySelector(`input[name="${name}"]:checked`)?.parentElement?.textContent?.trim() || '';
   const checks = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el=>el.parentElement.textContent.trim());
-  const planMap={'baby':'ベビー・キッズ','maternity':'マタニティー','adult':'オトナ','753':'七五三'};
+  const planMap={'baby':'ベビー・キッズ','maternity':'マタニティー','adult':'オトナ','753':'七五三','other':'その他'};
   const planVals = Array.from(document.querySelectorAll('input[name="plan"]:checked')).map(el=>el.value);
   const planLabels = planVals.map(v=>planMap[v]).filter(Boolean);
   const babyTypes = checks('baby_type').join('、');
   const adultTypes = checks('adult_type').join('、');
+  const otherTypes = checks('other_type').join('、');
   let plan = planLabels.join('、');
   if(planVals.includes('baby') && babyTypes) plan += ` / ${babyTypes}`;
   if(planVals.includes('adult') && adultTypes) plan += ` / ${adultTypes}`;
+  if(planVals.includes('other') && otherTypes) plan += ` / ${otherTypes}`;
   const adults = parseInt(document.getElementById('cnt-adult')?.value||0);
   const children = parseInt(document.getElementById('cnt-child')?.value||0);
   const pets = parseInt(document.getElementById('cnt-pet')?.value||0);
@@ -1225,8 +1317,10 @@ document.getElementById('f').addEventListener('submit',function(e){
     date: get('booking_date'),
     time: document.getElementById('booking_time')?.value || '',
     plan: plan,
+    plan_other_detail: getPlanOtherDetail(),
     adults, children, pets,
     members,
+    sns_ok: radio('sns_ok'),
     visit_count: radio('visit_count'),
     source: checks('source'),
     influencer: get('influencer-input'),
@@ -1242,27 +1336,29 @@ document.getElementById('f').addEventListener('submit',function(e){
     memo: get('memo-field'),
   };
 
-  try {
-    const existing = JSON.parse(localStorage.getItem('studio_responses')||'[]');
-    const filtered = existing.filter(r=>r._token!==response._token);
-    filtered.unshift(response);
-    localStorage.setItem('studio_responses', JSON.stringify(filtered));
-  } catch(err){}
-
   // ===== GASへ送信（スプレッドシート保存）=====
+  let alreadySubmitted = false;
   try {
-    submitToGAS(response).then(function(){
-      return uploadPhotosToGAS(response._token, 1, 'person')
-        .then(function(){ return uploadPhotosToGAS(response._token, 2, 'outfit'); });
-    }).catch(function(err){
-      console.error('GAS送信エラー:', err);
-    });
+    const result = await submitToGAS(response);
+    if (result && result.success === false && result.alreadySubmitted) {
+      alreadySubmitted = true;
+    } else {
+      await uploadPhotosToGAS(response._token, 1, 'person');
+      await uploadPhotosToGAS(response._token, 2, 'outfit');
+    }
   } catch(err) {
-    console.error('GAS呼び出し自体に失敗:', err);
+    console.error('GAS送信処理でエラー:', err);
   }
 
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-done').classList.add('active');
+  const doneEl = document.getElementById('page-done');
+  if (alreadySubmitted) {
+    const titleEl = doneEl.querySelector('.done-title');
+    const msgEl = doneEl.querySelector('.done-msg');
+    if (titleEl) titleEl.textContent = 'このURLは既に回答済みです';
+    if (msgEl) msgEl.innerHTML = '内容の変更が必要な場合は、担当者までご連絡ください。';
+  }
+  doneEl.classList.add('active');
   document.getElementById('progress-wrap').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
   } catch(submitErr) {
