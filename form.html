@@ -172,8 +172,9 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
         <option>鹿児島県</option><option>沖縄県</option>
       </select>
     </div>
-    <div class="field"><label>市区町村・番地・建物名<span class="req">*</span></label><input type="text" id="address_detail" placeholder="渋谷区神南1-2-3 ○○ビル101"></div>
+    <div class="field"><label>市区町村・町名<span class="req">*</span></label><input type="text" id="city_town" placeholder="○○市○○町"></div>
   </div>
+  <div class="field"><label>番地・建物名<span class="req">*</span></label><input type="text" id="address_detail" placeholder="1-2-3 ○○ビル101"></div>
   <div class="row2">
     <div class="field"><label>ご予約日<span class="req">*</span></label><input type="date" id="booking_date"></div>
     <div class="field" id="booking-time-field"><label>撮影時間</label>
@@ -570,9 +571,12 @@ async function lookupAddressByPostalCode(zip){
     if(json.results && json.results[0]){
       const r=json.results[0];
       const prefEl=document.getElementById('prefecture');
-      const addrEl=document.getElementById('address_detail');
+      const cityEl=document.getElementById('city_town');
       if(prefEl) prefEl.value=r.address1;
-      if(addrEl && !addrEl.value) addrEl.value=(r.address2||'')+(r.address3||'');
+      if(cityEl) cityEl.value=(r.address2||'')+(r.address3||'');
+      // 続けて番地・建物名を入力してもらうため、そちらにフォーカスを移す
+      const detailEl=document.getElementById('address_detail');
+      if(detailEl) detailEl.focus();
     }
   }catch(e){
     console.error('郵便番号からの住所自動入力に失敗:',e);
@@ -626,7 +630,7 @@ function validatePage(pageId){
     else if(!/^[0-9]+$/.test(tel.value)){showError(tel,'数字のみで入力してください');ok=false;}
     else clearError(tel);
     // 住所（郵便番号・都道府県・市区町村番地）
-    [['postal_code','郵便番号'],['prefecture','都道府県'],['address_detail','市区町村・番地・建物名']].forEach(([id,label])=>{
+    [['postal_code','郵便番号'],['prefecture','都道府県'],['city_town','市区町村・町名'],['address_detail','番地・建物名']].forEach(([id,label])=>{
       const el=document.getElementById(id);
       if(!el.value.trim()){showError(el,`${label}を入力してください`);ok=false;}else clearError(el);
     });
@@ -1178,7 +1182,7 @@ function goToConfirm(){
   let rows = [
     ['代表者', `${get('sei')} ${get('mei')}（${get('sei_kana')} ${get('mei_kana')}）`],
     ['電話番号', document.querySelector('input[type=tel]')?.value||'—'],
-    ['ご住所', get('postal_code')&&get('prefecture')&&get('address_detail') ? `〒${get('postal_code')} ${get('prefecture')}${get('address_detail')}` : '—'],
+    ['ご住所', get('postal_code')&&get('prefecture')&&get('city_town')&&get('address_detail') ? `〒${get('postal_code')} ${get('prefecture')}${get('city_town')}${get('address_detail')}` : '—'],
     ['ご予約日', get('booking_date')||'—'],
     ...(document.getElementById('booking_time')?.value ? [['撮影時間', document.getElementById('booking_time').value]] : []),
     ['撮影プラン', planStr],
@@ -1362,7 +1366,7 @@ document.getElementById('f').addEventListener('submit', async function(e){
     sei: get('sei'), mei: get('mei'),
     sei_kana: get('sei_kana'), mei_kana: get('mei_kana'),
     tel: document.querySelector('input[type=tel]')?.value || '',
-    address: `〒${get('postal_code')} ${get('prefecture')}${get('address_detail')}`,
+    address: `〒${get('postal_code')} ${get('prefecture')}${get('city_town')}${get('address_detail')}`,
     date: get('booking_date'),
     time: document.getElementById('booking_time')?.value || '',
     plan: plan,
