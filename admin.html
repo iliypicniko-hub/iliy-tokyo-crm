@@ -565,7 +565,6 @@ tbody td:first-child { color: var(--ink); font-weight: 500; }
     <button id="atab-url" onclick="switchAdminTab('url',this)" style="padding:0.9rem 1.5rem;font-size:13px;color:var(--gold);font-weight:500;cursor:pointer;border:none;background:none;border-bottom:2px solid var(--gold);margin-bottom:-1px;font-family:inherit;">フォームURL発行</button>
     <button id="atab-responses" onclick="switchAdminTab('responses',this)" style="padding:0.9rem 1.5rem;font-size:13px;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;">回答一覧</button>
     <button id="atab-costumes" onclick="switchAdminTab('costumes',this)" style="padding:0.9rem 1.5rem;font-size:13px;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;">衣装管理</button>
-    <button id="atab-analytics" onclick="switchAdminTab('analytics',this)" style="padding:0.9rem 1.5rem;font-size:13px;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;">きっかけ分析</button>
     <button id="atab-settings" onclick="switchAdminTab('settings',this)" style="padding:0.9rem 1.5rem;font-size:13px;color:var(--ink-3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit;">設定</button>
   </nav>
 
@@ -649,7 +648,6 @@ tbody td:first-child { color: var(--ink); font-weight: 500; }
       </div>
       <div style="display:flex;gap:0.75rem;align-items:center;">
         <button class="btn-gen" onclick="generateUrl()">URL 発行</button>
-        <button onclick="openUrlHistory()" style="background:none;color:var(--ink-3);border:none;padding:0.4rem 0.6rem;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline;">発行履歴</button>
       </div>
       </div>
       <div class="url-result" id="url-result">
@@ -704,7 +702,6 @@ tbody td:first-child { color: var(--ink); font-weight: 500; }
         <div style="flex-shrink:0;width:160px;">
           <div style="display:flex;flex-direction:column;gap:0.25rem;">
             <button id="stab-msg" onclick="switchSettingsTab('msg')" style="text-align:left;padding:0.65rem 1rem;font-size:13px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:transparent;color:var(--ink-2);">送付例文の編集</button>
-            <button id="stab-cal" onclick="switchSettingsTab('cal')" style="text-align:left;padding:0.65rem 1rem;font-size:13px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:transparent;color:var(--ink-2);">書き出しテキスト</button>
             <button id="stab-pw" onclick="switchSettingsTab('pw')" style="text-align:left;padding:0.65rem 1rem;font-size:13px;border:none;border-radius:6px;cursor:pointer;font-family:inherit;background:var(--cream);color:var(--gold);font-weight:500;">パスワード変更</button>
           </div>
         </div>
@@ -758,31 +755,6 @@ tbody td:first-child { color: var(--ink); font-weight: 500; }
         </div>
         </div><!-- /settings-msg -->
 
-        <!-- 書き出しテキスト -->
-        <div id="settings-cal" style="display:none;">
-        <div class="section-header" style="margin-bottom:1.5rem;">
-          <div class="section-title">書き出しテキストの編集</div>
-        </div>
-        <div style="background:#fff;border:0.5px solid var(--line);border-radius:8px;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
-          <div style="font-size:12px;color:var(--ink-3);line-height:1.8;">
-            使えるタグ：<br>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{日付}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{名前}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{電話}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{プラン}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{人数}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{メンバー}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{フラワー}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{衣装}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{要望}</code>
-            <code style="background:var(--cream);padding:1px 5px;border-radius:3px;">{スタッフメモ}</code>
-          </div>
-          <textarea id="cal-template" rows="16" style="width:100%;border:0.5px solid var(--line);border-radius:4px;padding:0.85rem;font-size:13px;font-family:inherit;resize:vertical;line-height:1.8;"></textarea>
-          <button onclick="saveCalTemplate()" style="background:var(--gold);color:#fff;border:none;padding:0.8rem;font-size:14px;border-radius:4px;cursor:pointer;font-family:inherit;width:100%;">保存</button>
-          <p id="cal-template-success" style="display:none;font-size:12px;color:#3a6b4f;background:#eaf3de;padding:0.6rem 0.85rem;border-radius:4px;">保存しました</p>
-        </div>
-        </div><!-- /settings-cal -->
-
         </div><!-- /content -->
       </div><!-- /flex -->
     </div>
@@ -813,28 +785,9 @@ tbody td:first-child { color: var(--ink); font-weight: 500; }
       <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem;">
         <button class="btn-copy" onclick="reloadData()" id="reload-btn" style="font-size:12px; padding:0.4rem 0.9rem;">再読み込み</button>
       </div>
-        <div class="stats-row" id="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">未回答</div>
-        <div class="stat-value" id="stat-unreplied">0<span class="stat-unit">件</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">新規回答</div>
-        <div class="stat-value" id="stat-total">0<span class="stat-unit">件</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">確認済予約</div>
-        <div class="stat-value" id="stat-week">0<span class="stat-unit">件</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">直近の予約日</div>
-        <div class="stat-value" id="stat-next" style="font-size:1.1rem; padding-top:4px;">—</div>
-      </div>
-    </div>
 <!-- Responses -->
     <div class="section-header">
-      <div class="section-title">回答一覧</div>
-      <button class="btn-copy" onclick="exportCSV()" style="font-size:12px; padding:0.4rem 0.9rem;">CSV 書き出し</button>
+      <div class="section-title">回答一覧<span id="stat-unreplied" style="font-size:12px;font-weight:400;color:var(--ink-3);margin-left:0.6rem;"></span></div>
     </div>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;background:var(--cream);border-radius:8px;padding:0.75rem 0.9rem;">
         <input type="text" placeholder="お客様名で検索…" oninput="renderTable()" id="search-input" autocomplete="off" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;width:160px;">
@@ -843,30 +796,6 @@ tbody td:first-child { color: var(--ink); font-weight: 500; }
           <input type="date" id="fp-date-from" onchange="renderTable()" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;cursor:pointer;">
           <span style="font-size:11px;color:var(--ink-3);">〜</span>
           <input type="date" id="fp-date-to" onchange="renderTable()" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;cursor:pointer;">
-        </div>
-        <div style="position:relative;">
-          <button id="fp-plan-btn" onclick="toggleFilterPopupV2(event,'plan')" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;cursor:pointer;width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;">プラン：すべて</button>
-          <div id="fp-plan-popup" class="fp-popup-v2" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:0.5px solid var(--line);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);padding:0.6rem;z-index:200;min-width:160px;max-height:300px;overflow-y:auto;">
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-plan-check" value="ベビー・キッズ" onchange="renderTable()" style="accent-color:var(--gold);"> ベビー・キッズ</label>
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-plan-check" value="マタニティー" onchange="renderTable()" style="accent-color:var(--gold);"> マタニティー</label>
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-plan-check" value="オトナ" onchange="renderTable()" style="accent-color:var(--gold);"> オトナ</label>
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-plan-check" value="七五三" onchange="renderTable()" style="accent-color:var(--gold);"> 七五三</label>
-          </div>
-        </div>
-        <div style="position:relative;">
-          <button id="fp-flower-btn" onclick="toggleFilterPopupV2(event,'flower')" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;cursor:pointer;width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;">フラワー：すべて</button>
-          <div id="fp-flower-popup" class="fp-popup-v2" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:0.5px solid var(--line);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);padding:0.6rem;z-index:200;min-width:160px;max-height:300px;overflow-y:auto;">
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-flower-check" value="なし" onchange="renderTable()" style="accent-color:var(--gold);"> なし</label>
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-flower-check" value="ブーケ" onchange="renderTable()" style="accent-color:var(--gold);"> ブーケ</label>
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-flower-check" value="装花" onchange="renderTable()" style="accent-color:var(--gold);"> 装花</label>
-          </div>
-        </div>
-        <div style="position:relative;">
-          <button id="fp-rental-btn" onclick="toggleFilterPopupV2(event,'rental')" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;cursor:pointer;width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;">衣装：すべて</button>
-          <div id="fp-rental-popup" class="fp-popup-v2" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:0.5px solid var(--line);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);padding:0.6rem;z-index:200;min-width:160px;max-height:300px;overflow-y:auto;">
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-rental-check" value="あり" onchange="renderTable()" style="accent-color:var(--gold);"> あり</label>
-            <label style="display:flex;align-items:center;gap:0.5rem;font-size:12px;padding:0.3rem 0.2rem;cursor:pointer;"><input type="checkbox" class="fp-rental-check" value="なし" onchange="renderTable()" style="accent-color:var(--gold);"> なし</label>
-          </div>
         </div>
         <div style="position:relative;">
           <button id="fp-sort-btn" onclick="toggleFilterPopupV2(event,'sort')" style="border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.6rem;font-size:12px;font-family:inherit;color:var(--ink-2);background:#fff;cursor:pointer;width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;">並び替え：予約日順</button>
@@ -973,7 +902,7 @@ function doLogout() {
 }
 
 // ===== Google Apps Script 連携設定 =====
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbwgVbTXDClMKBob_cyDrvE_NhCqaQB3J0l0i7JQ6yqyM3dCHq1hsMz7WUGHVDF7fnr7Qg/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbxJzArnwbYBLJ8rLCPrNEBFgyvHzAZ6T8UMpcoRRG8PPgH-GdVfqRHJ95sQRPgZ71NrFg/exec';
 
 function getResponses() {
   var data = JSON.parse(localStorage.getItem('studio_responses') || '[]');
@@ -1056,19 +985,8 @@ function syncFromGAS(){
 
 function renderAll() {
   const data = getResponses();
-  const now = new Date();
-  const newCount = data.filter(r => !r._confirmed && !r._cancelled && !r._reserved).length;
-  document.getElementById('stat-total').innerHTML = newCount + '<span class="stat-unit">件</span>';
-  const confirmedCount = data.filter(r => r._confirmed && !r._cancelled).length;
-  document.getElementById('stat-week').innerHTML = confirmedCount + '<span class="stat-unit">件</span>';
   const unrepliedCount = data.filter(r => r._reserved && !r._cancelled).length;
-  document.getElementById('stat-unreplied').innerHTML = unrepliedCount + '<span class="stat-unit">件</span>';
-  const upcoming = data
-    .filter(r => r.date && new Date(r.date) >= now)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-  document.getElementById('stat-next').textContent = upcoming[0]?.date
-    ? new Date(upcoming[0].date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' }) + '〜'
-    : '—';
+  document.getElementById('stat-unreplied').textContent = unrepliedCount > 0 ? `（未回答 ${unrepliedCount}件）` : '';
   renderTable();
 }
 
@@ -1163,58 +1081,96 @@ function toggleFilterPopupV2(e,name){
   }
 }
 function updateFilterLabelsV2(){
-  [['plan','プラン'],['flower','フラワー'],['rental','衣装']].forEach(function(pair){
-    var allChecks = document.querySelectorAll('.fp-'+pair[0]+'-check');
-    var checks = Array.from(allChecks).filter(function(cb){return cb.checked;}).map(function(cb){return cb.value;});
-    var btn = document.getElementById('fp-'+pair[0]+'-btn');
-    if(!btn) return;
-    var isNoneOrAll = checks.length===0 || checks.length===allChecks.length;
-    btn.textContent = isNoneOrAll ? pair[1]+'：すべて' : pair[1]+'：'+checks.join('・');
-  });
+  // プラン・フラワー・衣装フィルターは廃止済み
 }
 function resetFilters(){
   document.getElementById('search-input').value='';
-  ['fp-date-from','fp-date-to','filter-plan','filter-flower','filter-rental','filter-date-from','filter-date-to'].forEach(function(id){
+  ['fp-date-from','fp-date-to'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
-  document.querySelectorAll('.fp-plan-check,.fp-flower-check,.fp-rental-check').forEach(function(cb){cb.checked=false;});
   _sortCol=null;_sortDir=1;
   renderTable();
+}
+
+// HTML属性値として安全な文字列に変換
+function escapeAttr(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// クリップボードへコピー（Clipboard APIが使えない環境ではフォールバック）
+function copyTextToClipboard(text, cb){
+  if(!text){ cb(false); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(function(){ cb(true); }).catch(function(){
+      copyTextFallback(text, cb);
+    });
+  } else {
+    copyTextFallback(text, cb);
+  }
+}
+function copyTextFallback(text, cb){
+  try{
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    cb(!!ok);
+  } catch(e){
+    cb(false);
+  }
+}
+
+// フォームURLを再構成（発行時に保存されていなければ、name/date等から組み立てる。tokenが無くても生成する）
+function getFormUrlFor(r){
+  const base = 'https://iliypicniko-hub.github.io/iliy-tokyo-crm/';
+  let furl = r._form_url || '';
+  if(!furl && (r._token || r.sei || r.mei || r.date)){
+    const paramsObj = {sei:r.sei||'',mei:r.mei||'',sei_kana:r.sei_kana||'',mei_kana:r.mei_kana||'',date:r.date||''};
+    if(r._token) paramsObj.token = r._token;
+    const params = new URLSearchParams(paramsObj);
+    furl = base + 'form.html?' + params.toString();
+  }
+  return furl;
+}
+
+// 一覧からワンクリックでキャンセル／復元
+function cancelResponseQuick(token){
+  var data=getResponses();
+  var idx=data.findIndex(function(x){return x._token===token;});
+  if(idx<0) return;
+  var r=data[idx];
+  if(r._cancelled){
+    showDeleteConfirm('取り消しを解除しますか？',function(){
+      data[idx]._cancelled=false;
+      localStorage.setItem('studio_responses',JSON.stringify(data));
+      renderAll();
+    },'解除する');
+  } else {
+    showDeleteConfirm('この予約を取り消しますか？（データは保持します）',function(){
+      data[idx]._cancelled=true;
+      localStorage.setItem('studio_responses',JSON.stringify(data));
+      renderAll();
+    },'取り消す');
+  }
 }
 
 function renderTable() {
   updateFilterLabelsV2();
   const data = getResponses();
   const q = (document.getElementById('search-input')?.value||'').toLowerCase();
-  const planChecks = Array.from(document.querySelectorAll('.fp-plan-check:checked')).map(function(cb){return cb.value;});
-  const flowerChecks = Array.from(document.querySelectorAll('.fp-flower-check:checked')).map(function(cb){return cb.value;});
-  const rentalChecks = Array.from(document.querySelectorAll('.fp-rental-check:checked')).map(function(cb){return cb.value;});
   const dateFrom = document.getElementById('fp-date-from')?.value||'';
   const dateTo = document.getElementById('fp-date-to')?.value||'';
   const filtered = data.filter(r => {
     const name = ((r.sei || '') + ' ' + (r.mei || '')).toLowerCase();
     const searchMatch = !q || name.includes(q);
-    const planMatch = !planChecks.length || planChecks.some(function(p){return (r.plan||'').includes(p);});
-    const flowerMatch = (function(){
-      if(!flowerChecks.length) return true;
-      var ft = r.flower_type||'';
-      var isNashi = (r.flower||'')==='希望しない';
-      var isBouquet = ft.indexOf('花束')>-1 || ft.indexOf('ブーケ')>-1;
-      var isSouka = ft.indexOf('装花')>-1;
-      return flowerChecks.some(function(c){
-        if(c==='なし') return isNashi;
-        if(c==='ブーケ') return isBouquet;
-        if(c==='装花') return isSouka;
-        return false;
-      });
-    })();
-    const rentalMatch = !rentalChecks.length || rentalChecks.some(function(c){
-      if(c==='あり') return (r.rental||'')==='利用する';
-      if(c==='なし') return (r.rental||'')==='利用しない';
-      return false;
-    });
     const dateMatch = (!dateFrom||(r.date||'')>=dateFrom)&&(!dateTo||(r.date||'')<=dateTo);
-    return searchMatch && planMatch && flowerMatch && rentalMatch && dateMatch;
+    return searchMatch && dateMatch;
   });
 
   // Default sort by mode (when no column-specific sort is active)
@@ -1251,104 +1207,81 @@ function renderTable() {
   };
   var thS='cursor:pointer;user-select:none;';
   let html = '<table style="table-layout:fixed;width:100%;">'
-    + '<colgroup><col style="width:100px"><col style="width:100px"><col style="width:120px"><col style="width:150px"><col style="width:80px"><col style="width:80px"><col style="width:20px"><col style="width:110px"><col style="width:90px"><col style="width:70px"></colgroup>'
+    + '<colgroup><col style="width:130px"><col style="width:140px"><col style="width:90px"><col><col style="width:70px"></colgroup>'
     + '<thead>'
     + '<tr>'
     + '<th>予約日時</th>'
     + '<th>代表者名</th>'
-    + '<th>撮影プラン</th>'
-    + '<th>来店人数</th>'
-    + '<th>フラワー</th>'
-    + '<th>衣装レンタル</th>'
+    + '<th>ステータス</th>'
+    + '<th>URL</th>'
     + '<th></th>'
-    + '<th>備考</th>'
-    + '<th>テキスト書き出し</th>'
-    + '<th>確認済</th>'
     + '</tr>'
     + '</thead><tbody>';
   var _todayMarkerSet = false;
   filtered.forEach((r, i) => {
     const name = (r.sei || '') + ' ' + (r.mei || '');
-    const cntParts = [];
-    if(r.adults>0) cntParts.push(`大人${r.adults}`);
-    if(r.children>0) cntParts.push(`こども${r.children}`);
-    if(r.pets>0) cntParts.push(`ペット${r.pets}`);
-    const cnt = cntParts.join('・') || '—';
-    const rawType = r.flower_type || '';
-    const flowerShort = rawType.includes('装花') ? '装花' : rawType.includes('季節') ? 'ブーケ' : rawType.includes('ブーケ') ? 'ブーケ' : '';
-    const flower = r.flower==='希望する' ? '🌷'+(flowerShort?' '+flowerShort:'') : '—';
-    const rental = r.rental==='利用する' ? '👗 あり' : '—';
-    const memoRaw = r._staff_memo||''; const memo = memoRaw.slice(0,20) + (memoRaw.length>20?'…':'') || '—';
-    const editedMark = '';
-    const planShort = (r.plan||'—').replace('ベビー・キッズ / ','').replace('オトナ / ','');
     const isPast = r.date && new Date(r.date) < new Date(new Date().toDateString());
     const cancelledStyle = r._cancelled ? 'background:#f5f3f1;' : '';
     const cancelledTdStyle = r._cancelled ? 'color:#b0a8a0;' : (isPast ? 'color:#a8a29a;' : '');
-    const confirmedMark = (!r._confirmed && !r._cancelled && !r._reserved) ? '<span style="font-size:9px;background:#eaf3de;color:#3a6b4f;border-radius:3px;padding:1px 5px;margin-left:5px;">未確認</span>' : '';
-    const repeatMark = (r.visit_count && r.visit_count!=='初めて') ? '<span class="repeat-dot" data-repeat-label="'+r.visit_count+'！" onclick="event.stopPropagation();showRepeatBubble(this);" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#c9a14a;margin-left:5px;vertical-align:top;position:relative;top:2px;cursor:pointer;"></span>' : '';
     const isFirstUpcoming = (!_sortCol && _sortMode==='date' && !isPast && !_todayMarkerSet) ? (_todayMarkerSet=true, true) : false;
+    const furl = getFormUrlFor(r);
+    const cancelBtnLabel = r._cancelled ? '復元' : '取消';
+    const statusBadge = r._cancelled
+      ? '<span style="font-size:10px;background:#f5e9e9;color:#9b3a3a;border-radius:3px;padding:2px 7px;">取消済み</span>'
+      : (r._reserved ? '<span style="font-size:10px;background:#fef3cd;color:#856404;border-radius:3px;padding:2px 7px;">未回答</span>' : '');
 
     // 仮登録（未回答）の行
     if(r._reserved){
-      const reservedBadge = '<span style="font-size:9px;background:#fef3cd;color:#856404;border-radius:3px;padding:1px 5px;margin-left:5px;">未回答</span>';
-      html += `<tr data-token="${r._token}" class="data-row" ${isFirstUpcoming?'data-today-marker="1"':''} style="cursor:pointer;background:#fffdf7;">
+      html += `<tr data-token="${r._token}" ${isFirstUpcoming?'data-today-marker="1"':''} style="background:#fffdf7;">
         <td style="color:#a8a29a;">${r.date || '—'}${r.time ? '　' + r.time : ''}</td>
-        <td style="color:#a8a29a;">${name.trim() || '—'}${reservedBadge}</td>
-        <td style="color:#c8bfb8;">—</td>
-        <td style="color:#c8bfb8;">—</td>
-        <td style="color:#c8bfb8;">—</td>
-        <td style="color:#c8bfb8;">—</td>
-        <td></td>
-        <td style="color:#c8bfb8;">—</td>
-        <td></td>
-        <td></td>
+        <td style="color:#a8a29a;">${name.trim() || '—'}</td>
+        <td>${statusBadge}</td>
+        <td style="max-width:none;overflow:visible;">
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--cream);border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.5rem;">
+          <span style="font-family:'Courier New',monospace;font-size:11px;color:#a8a29a;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${furl||'—'}</span>
+          <button class="url-copy-btn" data-copy-url="${escapeAttr(furl)}" ${furl?'':'disabled'} title="コピー" style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;background:none;border:0.5px solid var(--line);border-radius:4px;cursor:${furl?'pointer':'not-allowed'};color:${furl?'#776a5e':'#c8bfb8'};"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+        </div>
+      </td>
+        <td style="padding:0.4rem 0.5rem;"><button class="cancel-quick-btn" data-cancel-token="${r._token}" style="background:none;border:0.5px solid #ddd6ce;border-radius:4px;padding:0.3rem 0.5rem;font-size:11px;cursor:pointer;font-family:inherit;color:#776a5e;">取消</button></td>
       </tr>`;
       return;
     }
-    html += `<tr data-token="${r._token}" class="data-row" ${isFirstUpcoming?'data-today-marker="1"':''} style="cursor:pointer;${cancelledStyle}">
+    html += `<tr data-token="${r._token}" ${isFirstUpcoming?'data-today-marker="1"':''} style="${cancelledStyle}">
       <td style="${cancelledTdStyle}">${r.date || '—'}${r.time ? '　' + r.time : ''}</td>
-      <td style="${cancelledTdStyle}">${name.trim() || '—'}${editedMark}${repeatMark}${confirmedMark}</td>
-      <td style="${cancelledTdStyle}">${planShort}</td>
-      <td style="${cancelledTdStyle}">${cnt}</td>
-      <td style="${cancelledTdStyle}">${flower}</td>
-      <td style="${cancelledTdStyle}">${rental}</td>
-      <td></td>
-      <td style="font-size:12px;white-space:normal;line-height:1.4;${cancelledTdStyle}">${memo}</td>
-      <td style="padding:0.4rem 0.5rem;"><button class="export-btn" data-export-token="${r._token}" style="background:none;border:0.5px solid #ddd6ce;border-radius:4px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#776a5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></td>
-      <td style="padding:0.4rem 0.5rem;">${r._cancelled?'':'<input type="checkbox" class="confirmed-check" data-confirmed-token="'+r._token+'" '+(r._confirmed?'checked':'')+' style="width:17px;height:17px;accent-color:#776a5e;cursor:pointer;">'}</td>
+      <td style="${cancelledTdStyle}">${name.trim() || '—'}</td>
+      <td>${statusBadge}</td>
+      <td style="max-width:none;overflow:visible;">
+      <div style="display:flex;align-items:center;gap:0.4rem;background:var(--cream);border:0.5px solid var(--line);border-radius:4px;padding:0.35rem 0.5rem;">
+        <span style="font-family:'Courier New',monospace;font-size:11px;${cancelledTdStyle}flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${furl||'—'}</span>
+        <button class="url-copy-btn" data-copy-url="${escapeAttr(furl)}" ${furl?'':'disabled'} title="コピー" style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;background:none;border:0.5px solid var(--line);border-radius:4px;cursor:${furl?'pointer':'not-allowed'};color:${furl?'#776a5e':'#c8bfb8'};"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      </div>
+    </td>
+      <td style="padding:0.4rem 0.5rem;"><button class="cancel-quick-btn" data-cancel-token="${r._token}" style="background:none;border:0.5px solid #ddd6ce;border-radius:4px;padding:0.3rem 0.5rem;font-size:11px;cursor:pointer;font-family:inherit;color:${r._cancelled?'#3a6b4f':'#776a5e'};">${cancelBtnLabel}</button></td>
     </tr>`;
   });
   html += '</tbody></table>';
   cont.innerHTML = html;
 
-  // Row click → open modal
-  cont.querySelectorAll('tr.data-row').forEach(function(row){
-    row.addEventListener('click', function(e){
-      if(e.target.closest('.export-btn') || e.target.closest('.confirmed-check')) return;
-      openModal(row.dataset.token);
-    });
-  });
-  // Export button
-  cont.querySelectorAll('.export-btn').forEach(function(btn){
+  // Quick cancel/restore button
+  cont.querySelectorAll('.cancel-quick-btn').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.stopPropagation();
-      copyResponseData(btn.dataset.exportToken);
-      var orig = btn.innerHTML;
-      btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a6b4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      setTimeout(function(){ btn.innerHTML = orig; }, 2000);
+      cancelResponseQuick(btn.dataset.cancelToken);
     });
   });
-  // Confirmed checkbox
-  cont.querySelectorAll('.confirmed-check').forEach(function(cb){
-    cb.addEventListener('click', function(e){ e.stopPropagation(); });
-    cb.addEventListener('change', function(){
-      var token = cb.dataset.confirmedToken;
-      var data = getResponses();
-      var idx = data.findIndex(function(x){ return x._token === token; });
-      if(idx<0) return;
-      data[idx]._confirmed = cb.checked;
-      localStorage.setItem('studio_responses', JSON.stringify(data));
-      renderAll();
+  // URLコピー ボタン
+  cont.querySelectorAll('.url-copy-btn').forEach(function(btn){
+    var origIcon = btn.innerHTML;
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      copyTextToClipboard(btn.dataset.copyUrl, function(ok){
+        if(ok){
+          btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3a6b4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        } else {
+          btn.title = 'コピーに失敗しました';
+        }
+        setTimeout(function(){ btn.innerHTML = origIcon; }, 1500);
+      });
     });
   });
 
@@ -1432,6 +1365,7 @@ function openModal(token) {
     <div class="detail-section">
       <div class="detail-section-title">撮影プラン・来店人数</div>
       <div class="detail-row"><span class="detail-key">撮影プラン${em('撮影プラン')}</span><span class="detail-val">${r.plan || '—'}</span></div>
+      ${r.plan_other_detail?`<div class="detail-row"><span class="detail-key">プラン「その他」の内容</span><span class="detail-val">${r.plan_other_detail}</span></div>`:''}
       <div class="detail-row"><span class="detail-key">来店人数${em('大人人数')||em('こども人数')||em('ペット人数')}</span><span class="detail-val">${cntStr}</span></div>
       ${membersHtml}
     </div>
@@ -2444,7 +2378,7 @@ function getMsgTemplate(){
 }
 
 function switchSettingsTab(name){
-  ['pw','msg','cal'].forEach(function(n){
+  ['pw','msg'].forEach(function(n){
     var el=document.getElementById('settings-'+n);
     if(el) el.style.display=n===name?'block':'none';
     var btn=document.getElementById('stab-'+n);
@@ -2455,7 +2389,6 @@ function switchSettingsTab(name){
     }
   });
   if(name==='msg') initMsgTemplate();
-  if(name==='cal') initCalTemplate();
 }
 function saveMsgTemplate(){
   var t=document.getElementById('msg-template').value;
@@ -2508,6 +2441,7 @@ function copyResponseData(token){
   lines.push('👤 '+name+'（'+kana+'）');
   lines.push('📞 '+(r.tel||'—'));
   lines.push('🎬 '+(r.plan||'—'));
+  if(r.plan_other_detail) lines.push('　└ その他の内容：'+r.plan_other_detail);
   if(r.visit_count) lines.push('🔁 ご来店回数：'+r.visit_count);
 
   // Source
@@ -2615,7 +2549,7 @@ function addImgField(val){
 
 // ── Admin Tab Switch ──
 function switchAdminTab(name, btn){
-  ['url','responses','costumes','settings','analytics'].forEach(n=>{
+  ['url','responses','costumes','settings'].forEach(n=>{
     const el=document.getElementById('admin-sec-'+n);
     if(el) el.style.display=n===name?'block':'none';
   });
@@ -2631,15 +2565,8 @@ function switchAdminTab(name, btn){
   }
   if(name==='responses'){
     renderAll();
-    setTimeout(function(){
-      var marker = document.querySelector('[data-today-marker="1"]');
-      if(marker){
-        marker.scrollIntoView({block:'center', behavior:'auto'});
-      }
-    }, 50);
     syncFromGAS().then(function(){ renderAll(); });
   }
-  if(name==='analytics') renderAnalytics();
   if(name==='settings'){
     switchSettingsTab('msg');
     document.getElementById('pw-current').value='';
@@ -3249,7 +3176,7 @@ function getMsgTemplate(){
 }
 
 function switchSettingsTab(name){
-  ['pw','msg','cal'].forEach(function(n){
+  ['pw','msg'].forEach(function(n){
     var el=document.getElementById('settings-'+n);
     if(el) el.style.display=n===name?'block':'none';
     var btn=document.getElementById('stab-'+n);
@@ -3260,7 +3187,6 @@ function switchSettingsTab(name){
     }
   });
   if(name==='msg') initMsgTemplate();
-  if(name==='cal') initCalTemplate();
 }
 function saveMsgTemplate(){
   var t=document.getElementById('msg-template').value;
