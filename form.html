@@ -155,6 +155,25 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
     <div class="field"><label>名（ふりがな）<span class="req">*</span></label><input type="text" id="mei_kana" placeholder="はなこ" autocomplete="new-password"></div>
   </div>
   <div class="field"><label>電話番号<span class="req">*</span></label><input type="tel" id="tel-input" placeholder="09012345678" style="max-width:260px;" oninput="normalizeTel(this)" inputmode="numeric" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" pattern="[0-9]*"></div>
+  <div class="field"><label>郵便番号<span class="req">*</span></label><input type="text" id="postal_code" placeholder="1234567" style="max-width:200px;" inputmode="numeric" maxlength="8" oninput="handlePostalInput(this)" autocomplete="off"><span class="note-txt">ハイフンなしでOK・入力すると住所を自動入力します</span></div>
+  <div class="row2">
+    <div class="field"><label>都道府県<span class="req">*</span></label>
+      <select id="prefecture">
+        <option value="">選択してください</option>
+        <option>北海道</option><option>青森県</option><option>岩手県</option><option>宮城県</option><option>秋田県</option>
+        <option>山形県</option><option>福島県</option><option>茨城県</option><option>栃木県</option><option>群馬県</option>
+        <option>埼玉県</option><option>千葉県</option><option>東京都</option><option>神奈川県</option><option>新潟県</option>
+        <option>富山県</option><option>石川県</option><option>福井県</option><option>山梨県</option><option>長野県</option>
+        <option>岐阜県</option><option>静岡県</option><option>愛知県</option><option>三重県</option><option>滋賀県</option>
+        <option>京都府</option><option>大阪府</option><option>兵庫県</option><option>奈良県</option><option>和歌山県</option>
+        <option>鳥取県</option><option>島根県</option><option>岡山県</option><option>広島県</option><option>山口県</option>
+        <option>徳島県</option><option>香川県</option><option>愛媛県</option><option>高知県</option><option>福岡県</option>
+        <option>佐賀県</option><option>長崎県</option><option>熊本県</option><option>大分県</option><option>宮崎県</option>
+        <option>鹿児島県</option><option>沖縄県</option>
+      </select>
+    </div>
+    <div class="field"><label>市区町村・番地・建物名<span class="req">*</span></label><input type="text" id="address_detail" placeholder="渋谷区神南1-2-3 ○○ビル101"></div>
+  </div>
   <div class="row2">
     <div class="field"><label>ご予約日<span class="req">*</span></label><input type="date" id="booking_date"></div>
     <div class="field" id="booking-time-field"><label>撮影時間</label>
@@ -536,6 +555,29 @@ function normalizeTel(el){
     .replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0))
     .replace(/[^0-9]/g,'');
 }
+// ===== 郵便番号→住所 自動入力 =====
+function handlePostalInput(el){
+  el.value=el.value
+    .replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0))
+    .replace(/[^0-9]/g,'')
+    .slice(0,7);
+  if(el.value.length===7) lookupAddressByPostalCode(el.value);
+}
+async function lookupAddressByPostalCode(zip){
+  try{
+    const res=await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`);
+    const json=await res.json();
+    if(json.results && json.results[0]){
+      const r=json.results[0];
+      const prefEl=document.getElementById('prefecture');
+      const addrEl=document.getElementById('address_detail');
+      if(prefEl) prefEl.value=r.address1;
+      if(addrEl && !addrEl.value) addrEl.value=(r.address2||'')+(r.address3||'');
+    }
+  }catch(e){
+    console.error('郵便番号からの住所自動入力に失敗:',e);
+  }
+}
 (function(){
   var telEl = document.getElementById('tel-input');
   if(!telEl) return;
@@ -583,6 +625,11 @@ function validatePage(pageId){
     if(!tel.value.trim()){showError(tel,'電話番号を入力してください');ok=false;}
     else if(!/^[0-9]+$/.test(tel.value)){showError(tel,'数字のみで入力してください');ok=false;}
     else clearError(tel);
+    // 住所（郵便番号・都道府県・市区町村番地）
+    [['postal_code','郵便番号'],['prefecture','都道府県'],['address_detail','市区町村・番地・建物名']].forEach(([id,label])=>{
+      const el=document.getElementById(id);
+      if(!el.value.trim()){showError(el,`${label}を入力してください`);ok=false;}else clearError(el);
+    });
     // Date
     const dt=document.getElementById('booking_date');
     if(!dt.value){showError(dt,'ご予約日を入力してください');ok=false;}else clearError(dt);
@@ -1131,6 +1178,7 @@ function goToConfirm(){
   let rows = [
     ['代表者', `${get('sei')} ${get('mei')}（${get('sei_kana')} ${get('mei_kana')}）`],
     ['電話番号', document.querySelector('input[type=tel]')?.value||'—'],
+    ['ご住所', get('postal_code')&&get('prefecture')&&get('address_detail') ? `〒${get('postal_code')} ${get('prefecture')}${get('address_detail')}` : '—'],
     ['ご予約日', get('booking_date')||'—'],
     ...(document.getElementById('booking_time')?.value ? [['撮影時間', document.getElementById('booking_time').value]] : []),
     ['撮影プラン', planStr],
@@ -1314,6 +1362,7 @@ document.getElementById('f').addEventListener('submit', async function(e){
     sei: get('sei'), mei: get('mei'),
     sei_kana: get('sei_kana'), mei_kana: get('mei_kana'),
     tel: document.querySelector('input[type=tel]')?.value || '',
+    address: `〒${get('postal_code')} ${get('prefecture')}${get('address_detail')}`,
     date: get('booking_date'),
     time: document.getElementById('booking_time')?.value || '',
     plan: plan,
