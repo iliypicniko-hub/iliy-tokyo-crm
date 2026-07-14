@@ -1358,6 +1358,7 @@ function openModal(token) {
       <div class="detail-section-title">基本情報</div>
       <div class="detail-row"><span class="detail-key">お名前${em('姓')||em('名')}</span><span class="detail-val">${name}（${kana || '—'}）</span></div>
       <div class="detail-row"><span class="detail-key">電話番号${em('電話番号')}</span><span class="detail-val">${r.tel || '—'}</span></div>
+      <div class="detail-row"><span class="detail-key">ご住所${em('住所')}</span><span class="detail-val">${r.address || '—'}</span></div>
       <div class="detail-row"><span class="detail-key">ご予約日時${em('予約日')}</span><span class="detail-val">${r.date || '—'}${r.time ? '　' + r.time : ''}</span></div>
       <div class="detail-row"><span class="detail-key">回答日時</span><span class="detail-val">${r._submitted_at ? new Date(r._submitted_at).toLocaleString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—'}</span></div>
       <div class="detail-row"><span class="detail-key">ご来店回数${em('ご来店回数')}</span><span class="detail-val">${r.visit_count || '—'}</span></div>
@@ -2440,6 +2441,7 @@ function copyResponseData(token){
   lines.push('');
   lines.push('👤 '+name+'（'+kana+'）');
   lines.push('📞 '+(r.tel||'—'));
+  if(r.address) lines.push('🏠 '+r.address);
   lines.push('🎬 '+(r.plan||'—'));
   if(r.plan_other_detail) lines.push('　└ その他の内容：'+r.plan_other_detail);
   if(r.visit_count) lines.push('🔁 ご来店回数：'+r.visit_count);
