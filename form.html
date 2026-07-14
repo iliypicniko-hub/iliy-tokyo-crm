@@ -558,12 +558,25 @@ function normalizeTel(el){
 }
 // ===== 郵便番号→住所 自動入力 =====
 function handlePostalInput(el){
+  if(el.dataset.composing === '1') return;
   el.value=el.value
     .replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0))
     .replace(/[^0-9]/g,'')
     .slice(0,7);
   if(el.value.length===7) lookupAddressByPostalCode(el.value);
 }
+(function(){
+  var postalEl = document.getElementById('postal_code');
+  if(!postalEl) return;
+  postalEl.addEventListener('compositionstart', function(){ postalEl.dataset.composing = '1'; });
+  postalEl.addEventListener('compositionend', function(){
+    postalEl.dataset.composing = '0';
+    handlePostalInput(postalEl);
+  });
+  postalEl.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') handlePostalInput(postalEl);
+  });
+})();
 async function lookupAddressByPostalCode(zip){
   try{
     const res=await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`);
