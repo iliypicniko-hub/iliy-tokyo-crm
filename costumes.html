@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>衣装管理 — iliy TOKYO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #1a1814;
+  --ink-2: #4a4640;
+  --ink-3: #8a8680;
+  --line: #ddd6ce;
+  --paper: #faf8f6;
+  --cream: #f0ece8;
+  --gold: #776a5e;
+  --accent: #4a3f35;
+  --red: #9b3a3a;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+.top-bar {
+  background: var(--gold);
+  color: #fff;
+  padding: 1rem 2rem;
+}
+.top-bar-sub {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 2px;
+}
+.top-bar-title {
+  font-size: 14px;
+  letter-spacing: 0.1em;
+}
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+.toolbar { display: flex; justify-content: flex-end; margin-bottom: 1.25rem; }
+.btn-add {
+  background: var(--gold); color: #fff; border: none; border-radius: 4px;
+  padding: 0.65rem 1.25rem; font-size: 13px; font-family: inherit; cursor: pointer;
+}
+.btn-add:hover { background: var(--accent); }
+
+.costume-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.costume-card {
+  background: #fff;
+  border: 0.5px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.costume-imgwrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--cream);
+  overflow: hidden;
+}
+.costume-imgwrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.costume-nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.85); border: none; border-radius: 50%;
+  width: 26px; height: 26px; font-size: 18px; cursor: pointer; line-height: 1; padding: 0;
+}
+.costume-dots { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+.costume-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.5); }
+.costume-dot.active { background: #fff; }
+
+.costume-ctrl {
+  position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; z-index: 2;
+}
+.costume-ctrl button {
+  width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.9); color: var(--ink-2); font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.costume-ctrl button.del { color: var(--red); }
+.costume-ctrl button:hover { background: #fff; }
+
+.costume-order { position: absolute; top: 6px; left: 6px; display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+.costume-order button {
+  width: 22px; height: 20px; border-radius: 4px; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.9); color: var(--ink-2); font-size: 11px; line-height: 1;
+}
+.costume-order button:disabled { opacity: 0.3; cursor: default; }
+
+.costume-body { padding: 0.7rem 0.8rem 0.85rem; }
+.costume-name { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+.costume-desc { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+
+.empty-msg {
+  text-align: center; padding: 4rem 1rem; font-size: 13px; color: var(--ink-3);
+}
+
+/* ── Modals (共通) ── */
+.modal-mask {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 300; align-items: center; justify-content: center;
+}
+.modal-box {
+  background: #fff; border-radius: 12px; max-width: 560px; width: 90%;
+  max-height: 88vh; overflow-y: auto; padding: 2rem 1.75rem;
+}
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.modal-title { font-size: 15px; font-weight: 500; color: var(--ink); }
+.modal-close { background: none; border: none; font-size: 24px; color: var(--ink-3); cursor: pointer; line-height: 1; padding: 0; }
+.modal-field { margin-bottom: 1rem; }
+.modal-field label { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 4px; }
+.modal-field input[type=text] {
+  width: 100%; border: 0.5px solid var(--line); border-radius: 4px;
+  padding: 0.7rem 0.85rem; font-size: 14px; font-family: inherit;
+}
+.upload-area {
+  border: 1.5px dashed var(--line); border-radius: 8px; padding: 2rem 1rem;
+  text-align: center; cursor: pointer; background: var(--cream);
+  transition: border-color 0.2s, background 0.2s; margin-bottom: 0.75rem;
+}
+.imgs-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+.modal-btn-row { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
+.btn-primary {
+  flex: 1; background: var(--gold); color: #fff; border: none; padding: 0.8rem;
+  font-size: 14px; border-radius: 4px; cursor: pointer; font-family: inherit;
+}
+.btn-secondary {
+  background: #fff; color: var(--ink-2); border: 0.5px solid var(--line);
+  padding: 0.8rem 1.25rem; font-size: 14px; border-radius: 4px; cursor: pointer; font-family: inherit;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-sub">family photo studio　iliy TOKYO</div>
+  <div class="top-bar-title">衣装管理</div>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <button class="btn-add" onclick="openCostumeModal(null)">＋ 衣装を追加</button>
+  </div>
+  <div id="costume-grid" class="costume-grid"></div>
+  <div id="costume-empty" class="empty-msg" style="display:none;">まだ衣装が登録されていません</div>
+</div>
+
+<!-- Delete Confirm -->
+<div id="del-confirm" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:10px;padding:2rem;max-width:320px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.15);">
+    <div style="font-size:14px;color:var(--ink);margin-bottom:1.5rem;line-height:1.6;" id="del-confirm-msg"></div>
+    <div style="display:flex;gap:0.75rem;justify-content:center;">
+      <button id="del-confirm-ok" style="background:var(--red);color:#fff;border:none;padding:0.65rem 1.5rem;font-size:13px;border-radius:4px;cursor:pointer;font-family:inherit;">削除する</button>
+      <button id="del-confirm-cancel" style="background:#fff;color:var(--ink-2);border:0.5px solid var(--line);padding:0.65rem 1.25rem;font-size:13px;border-radius:4px;cursor:pointer;font-family:inherit;">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- Costume Modal -->
+<div id="costume-modal" class="modal-mask">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title" id="cm-title">衣装を追加</span>
+      <button class="modal-close" onclick="closeCostumeModal()">×</button>
+    </div>
+    <input type="hidden" id="cm-id">
+    <div class="modal-field">
+      <label>衣装名 *</label>
+      <input type="text" id="cm-name" placeholder="例）ホワイトレースドレス" autocomplete="off">
+    </div>
+    <div class="modal-field">
+      <label>説明</label>
+      <input type="text" id="cm-desc" placeholder="サイズ・素材・雰囲気など" autocomplete="off">
+    </div>
+    <div class="modal-field">
+      <label style="margin-bottom:8px;">画像（複数枚可）</label>
+      <div id="cm-upload-area" class="upload-area"
+        onclick="document.getElementById('cm-file-input').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='#fff'"
+        ondragleave="this.style.borderColor='var(--line)';this.style.background='var(--cream)'"
+        ondrop="handleCostumeFileDrop(event);this.style.borderColor='var(--line)';this.style.background='var(--cream)'">
+        <div style="font-size:24px;margin-bottom:0.5rem;">🖼</div>
+        <div style="font-size:13px;color:var(--gold);font-weight:500;margin-bottom:0.25rem;">タップして写真を選ぶ</div>
+        <div style="font-size:11px;color:var(--ink-3);">複数枚OK・ドラッグ＆ドロップも可</div>
+      </div>
+      <input type="file" id="cm-file-input" accept="image/*" multiple style="display:none;" onchange="handleCostumeFileSelect(this)">
+      <div id="cm-imgs-preview" class="imgs-preview"></div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px;">※ 保存するとGoogle ドライブに自動保存されます</div>
+    </div>
+    <div class="modal-btn-row">
+      <button id="cm-save-btn" class="btn-primary" onclick="saveCostumeModal()">保存</button>
+      <button class="btn-secondary" onclick="closeCostumeModal()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- Crop Modal -->
+<div id="crop-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:1.5rem;max-width:420px;width:90%;">
+    <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:1rem;">トリミング</div>
+    <div style="position:relative;width:100%;aspect-ratio:1;background:#000;overflow:hidden;border-radius:8px;cursor:move;" id="crop-container">
+      <img id="crop-img" style="position:absolute;transform-origin:0 0;" draggable="false">
+      <div style="position:absolute;inset:0;border:2px solid #fff;border-radius:8px;pointer-events:none;box-shadow:0 0 0 9999px rgba(0,0,0,0.4);"></div>
+    </div>
+    <div style="margin:0.75rem 0;display:flex;align-items:center;gap:0.75rem;">
+      <span style="font-size:11px;color:var(--ink-3);flex-shrink:0;">拡大縮小</span>
+      <input type="range" id="crop-scale" min="1" max="3" step="0.01" value="1" style="flex:1;">
+    </div>
+    <div style="display:flex;gap:0.75rem;">
+      <button onclick="applyCrop()" style="flex:1;background:var(--gold);color:#fff;border:none;padding:0.75rem;font-size:14px;border-radius:4px;cursor:pointer;font-family:inherit;">この範囲で切り抜く</button>
+      <button onclick="cancelCrop()" style="background:#fff;color:var(--ink-2);border:0.5px solid var(--line);padding:0.75rem 1rem;font-size:14px;border-radius:4px;cursor:pointer;font-family:inherit;">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== Google Apps Script 連携設定 =====
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbxJzArnwbYBLJ8rLCPrNEBFgyvHzAZ6T8UMpcoRRG8PPgH-GdVfqRHJ95sQRPgZ71NrFg/exec';
+// 管理者専用の合言葉。Code.gs側のスクリプトプロパティ「ADMIN_SECRET」と同じ値にしてください。
+var ADMIN_SECRET = 'FmPANzSvDvwYmtFaKHLjQ4yTXSf8';
+
+var _costumeCache = null;
+
+function fetchCostumesFromGAS(){
+  if(!GAS_URL) return Promise.resolve(_costumeCache||[]);
+  return fetch(GAS_URL + '?action=getCostumes')
+    .then(function(r){return r.json();})
+    .then(function(result){
+      if(result.success){
+        _costumeCache = result.data || [];
+        return _costumeCache;
+      }
+      return _costumeCache||[];
+    })
+    .catch(function(){ return _costumeCache||[]; });
+}
+
+function getAllCostumes(){
+  return _costumeCache || [];
+}
+
+function saveAllCostumes(list){
+  _costumeCache = list;
+  if(!GAS_URL) return;
+  fetch(GAS_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({action:'saveCostumes', secret: ADMIN_SECRET, payload:{costumes: list}})
+  }).catch(function(){});
+}
+
+function loadAndRenderCostumes(){
+  var el = document.getElementById('costume-grid');
+  if(el) el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;font-size:13px;color:var(--ink-3);">読み込み中…</div>';
+  fetchCostumesFromGAS().then(function(){
+    renderCostumeGrid();
+  });
+}
+
+function moveCostume(id, dir){
+  var list = getAllCostumes().slice();
+  var idx = list.findIndex(function(x){return x.id===id;});
+  if(idx<0) return;
+  var to = idx + dir;
+  if(to<0 || to>=list.length) return;
+  var tmp = list[idx];
+  list[idx] = list[to];
+  list[to] = tmp;
+  saveAllCostumes(list);
+  renderCostumeGrid();
+}
+
+// ===== 一覧表示（フォームプレビューと同じ見た目＋編集・削除・並べ替え） =====
+function renderCostumeGrid(){
+  var list = getAllCostumes();
+  var grid = document.getElementById('costume-grid');
+  var empty = document.getElementById('costume-empty');
+  if(!grid) return;
+  grid.innerHTML = '';
+  empty.style.display = list.length ? 'none' : 'block';
+
+  list.forEach(function(item, index){
+    var imgs = item.imgs || [];
+    var card = document.createElement('div');
+    card.className = 'costume-card';
+
+    var imgwrap = document.createElement('div');
+    imgwrap.className = 'costume-imgwrap';
+
+    var current = 0;
+    var imgEl = null;
+    if(imgs.length > 0){
+      imgEl = document.createElement('img');
+      imgEl.src = imgs[0];
+      imgEl.onerror = function(){ this.style.display = 'none'; };
+      imgwrap.appendChild(imgEl);
+
+      if(imgs.length > 1){
+        var prev = document.createElement('button');
+        prev.className = 'costume-nav-btn';
+        prev.style.left = '4px';
+        prev.innerHTML = '&#8249;';
+        var next = document.createElement('button');
+        next.className = 'costume-nav-btn';
+        next.style.right = '4px';
+        next.innerHTML = '&#8250;';
+        var dots = document.createElement('div');
+        dots.className = 'costume-dots';
+        imgs.forEach(function(_, di){
+          var dot = document.createElement('div');
+          dot.className = 'costume-dot' + (di===0 ? ' active' : '');
+          dots.appendChild(dot);
+        });
+        var updateSlide = function(){
+          imgEl.src = imgs[current];
+          Array.from(dots.children).forEach(function(d, di){
+            d.className = 'costume-dot' + (di===current ? ' active' : '');
+          });
+        };
+        prev.onclick = function(){ current=(current-1+imgs.length)%imgs.length; updateSlide(); };
+        next.onclick = function(){ current=(current+1)%imgs.length; updateSlide(); };
+        imgwrap.appendChild(prev);
+        imgwrap.appendChild(next);
+        imgwrap.appendChild(dots);
+      }
+    }
+
+    // 並べ替え（上下）
+    var order = document.createElement('div');
+    order.className = 'costume-order';
+    var upBtn = document.createElement('button');
+    upBtn.textContent = '▲';
+    upBtn.disabled = index === 0;
+    upBtn.onclick = function(){ moveCostume(item.id, -1); };
+    var downBtn = document.createElement('button');
+    downBtn.textContent = '▼';
+    downBtn.disabled = index === list.length - 1;
+    downBtn.onclick = function(){ moveCostume(item.id, 1); };
+    order.appendChild(upBtn);
+    order.appendChild(downBtn);
+    imgwrap.appendChild(order);
+
+    // 編集・削除
+    var ctrl = document.createElement('div');
+    ctrl.className = 'costume-ctrl';
+    var editBtn = document.createElement('button');
+    editBtn.innerHTML = '✎';
+    editBtn.title = '編集';
+    editBtn.onclick = function(){ openCostumeModal(item.id); };
+    var delBtn = document.createElement('button');
+    delBtn.innerHTML = '×';
+    delBtn.className = 'del';
+    delBtn.title = '削除';
+    delBtn.onclick = function(){
+      showDeleteConfirm(item.name + ' を削除しますか？', function(){
+        saveAllCostumes(getAllCostumes().filter(function(x){return x.id!==item.id;}));
+        renderCostumeGrid();
+      });
+    };
+    ctrl.appendChild(editBtn);
+    ctrl.appendChild(delBtn);
+    imgwrap.appendChild(ctrl);
+
+    var body = document.createElement('div');
+    body.className = 'costume-body';
+    body.innerHTML = '<div class="costume-name">' + item.name + '</div><div class="costume-desc">' + (item.desc || '') + '</div>';
+
+    card.appendChild(imgwrap);
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+
+// ===== 削除確認ダイアログ =====
+function showDeleteConfirm(msg, onOk, okLabel){
+  var d = document.getElementById('del-confirm');
+  document.getElementById('del-confirm-msg').textContent = msg;
+  var okBtn = document.getElementById('del-confirm-ok');
+  okBtn.textContent = okLabel || '削除する';
+  okBtn.style.background = okLabel ? 'var(--gold)' : 'var(--red)';
+  d.style.display = 'flex';
+  okBtn.onclick = function(){ d.style.display = 'none'; onOk(); };
+  document.getElementById('del-confirm-cancel').onclick = function(){ d.style.display = 'none'; };
+}
+
+// ===== 衣装の追加・編集モーダル =====
+var _costumeImgs = [];
+
+function openCostumeModal(id){
+  var list = getAllCostumes();
+  var item = id ? list.find(function(x){return x.id===id;}) : null;
+  document.getElementById('cm-title').textContent = item ? '衣装を編集' : '衣装を追加';
+  document.getElementById('cm-id').value = id || '';
+  document.getElementById('cm-name').value = item ? item.name : '';
+  document.getElementById('cm-desc').value = item ? (item.desc || '') : '';
+  document.getElementById('cm-name').style.borderColor = '';
+  _costumeImgs = [];
+  if(item && item.imgs && item.imgs.length){
+    item.imgs.forEach(function(url){ if(url) _costumeImgs.push({url:url, isNew:false}); });
+  }
+  renderCostumeImgPreview();
+  document.getElementById('costume-modal').style.display = 'flex';
+}
+function closeCostumeModal(){
+  document.getElementById('costume-modal').style.display = 'none';
+  _costumeImgs = [];
+}
+
+function saveCostumeModal(){
+  var name = document.getElementById('cm-name').value.trim();
+  if(!name){ document.getElementById('cm-name').style.borderColor = 'var(--red)'; return; }
+  var desc = document.getElementById('cm-desc').value.trim();
+  var editId = document.getElementById('cm-id').value;
+  var costumeId = editId || ('c' + Date.now());
+
+  var saveBtn = document.getElementById('cm-save-btn');
+  if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = '保存中…'; }
+
+  var newImgs = _costumeImgs.filter(function(i){ return i.isNew; });
+  var hasNew = newImgs.length > 0;
+
+  function finalize(driveUrls){
+    var newIdx = 0;
+    var saveImgs = [];
+    _costumeImgs.forEach(function(img){
+      if(!img.isNew){
+        saveImgs.push(img.driveUrl || img.url);
+      } else {
+        var du = (driveUrls && driveUrls[newIdx]) ? driveUrls[newIdx] : img.url;
+        newIdx++;
+        saveImgs.push(du);
+      }
+    });
+
+    var list = getAllCostumes();
+    var id = editId ? parseInt(editId) : Date.now();
+    var entry = { id: id, name: name, desc: desc, imgs: saveImgs };
+
+    if(editId){
+      var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
+      if(idx >= 0) list[idx] = entry; else list.push(entry);
+    } else {
+      list.push(entry);
+    }
+
+    saveAllCostumes(list);
+    closeCostumeModal();
+    renderCostumeGrid();
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = '保存'; }
+  }
+
+  if(!hasNew){
+    finalize(null);
+    return;
+  }
+
+  var base64List = newImgs.map(function(img, i){
+    return {
+      base64: img.url.replace(/^data:[^;]+;base64,/, ''),
+      mimeType: (img.url.match(/^data:([^;]+);base64,/) || [])[1] || 'image/jpeg',
+      filename: 'costume_' + Date.now() + '_' + i + '.jpg'
+    };
+  });
+
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+      action: 'uploadCostumePhotos',
+      secret: ADMIN_SECRET,
+      payload: { costumeId: costumeId, costumeName: name, images: base64List }
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(result){
+    finalize(result.success ? (result.fileUrls || [result.folderUrl]) : null);
+  })
+  .catch(function(){ finalize(null); });
+}
+
+// ===== 画像アップロード（選択・ドラッグ&ドロップ）→ トリミングへ =====
+function handleCostumeFileSelect(input){
+  var files = Array.from(input.files);
+  input.value = '';
+  if(files.length === 0) return;
+  _pendingCropFiles = files.slice(1);
+  openCrop(files[0]);
+}
+function handleCostumeFileDrop(ev){
+  ev.preventDefault();
+  var files = Array.from((ev.dataTransfer && ev.dataTransfer.files) || []).filter(function(f){
+    return f.type && f.type.indexOf('image/') === 0;
+  });
+  if(files.length === 0) return;
+  _pendingCropFiles = files.slice(1);
+  openCrop(files[0]);
+}
+
+function renderCostumeImgPreview(){
+  var wrap = document.getElementById('cm-imgs-preview');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  var draggingIdx = null;
+  var floatEl = null;
+
+  _costumeImgs.forEach(function(img, idx){
+    var item = document.createElement('div');
+    item.style.cssText = 'position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;border:0.5px solid var(--line);cursor:grab;transition:opacity 0.15s,outline 0.1s;';
+    item.dataset.imgIdx = idx;
+
+    var imgEl = document.createElement('img');
+    imgEl.src = img.url;
+    imgEl.onerror = function(){
+      this.style.display = 'none';
+      item.style.background = 'var(--cream)';
+      var badge = document.createElement('div');
+      badge.textContent = '📎';
+      badge.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;pointer-events:none;';
+      item.appendChild(badge);
+    };
+    imgEl.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;';
+
+    var del = document.createElement('button');
+    del.type = 'button'; del.innerHTML = '×';
+    del.style.cssText = 'position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.5);color:#fff;border:none;font-size:13px;cursor:pointer;line-height:20px;padding:0;z-index:2;';
+    (function(i){ del.onclick = function(ev){ ev.stopPropagation(); _costumeImgs.splice(i,1); renderCostumeImgPreview(); }; })(idx);
+
+    item.appendChild(imgEl);
+    item.appendChild(del);
+
+    item.addEventListener('mousedown', function(e){
+      if(e.target === del) return;
+      e.preventDefault();
+      draggingIdx = idx;
+      var rect = item.getBoundingClientRect();
+
+      floatEl = document.createElement('div');
+      floatEl.style.cssText = 'position:fixed;width:' + rect.width + 'px;height:' + rect.height + 'px;border-radius:6px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.2);z-index:9999;pointer-events:none;opacity:0.9;';
+      var fi = document.createElement('img');
+      fi.src = img.url;
+      fi.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+      floatEl.appendChild(fi);
+      floatEl.style.left = rect.left + 'px'; floatEl.style.top = rect.top + 'px';
+      document.body.appendChild(floatEl);
+      item.style.opacity = '0.3';
+
+      function move(ev){
+        document.body.style.userSelect = 'none';
+        floatEl.style.left = (ev.clientX - rect.width / 2) + 'px';
+        floatEl.style.top = (ev.clientY - rect.height / 2) + 'px';
+        var items = Array.from(wrap.querySelectorAll('[data-img-idx]'));
+        items.forEach(function(el){ el.style.outline = ''; });
+        var closest = null, closestDist = Infinity;
+        items.forEach(function(el){
+          if(parseInt(el.dataset.imgIdx) === draggingIdx) return;
+          var r = el.getBoundingClientRect();
+          var d = Math.abs(ev.clientX - (r.left + r.width / 2)) + Math.abs(ev.clientY - (r.top + r.height / 2));
+          if(d < closestDist){ closestDist = d; closest = el; }
+        });
+        if(closest) closest.style.outline = '2px solid var(--gold)';
+      }
+      function up(ev){
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+        document.body.style.userSelect = '';
+        if(floatEl){ floatEl.remove(); floatEl = null; }
+        item.style.opacity = '1';
+        var items = Array.from(wrap.querySelectorAll('[data-img-idx]'));
+        items.forEach(function(el){ el.style.outline = ''; });
+        var closest = null, closestDist = Infinity;
+        items.forEach(function(el){
+          var ti = parseInt(el.dataset.imgIdx);
+          if(ti === draggingIdx) return;
+          var r = el.getBoundingClientRect();
+          var d = Math.abs(ev.clientX - (r.left + r.width / 2)) + Math.abs(ev.clientY - (r.top + r.height / 2));
+          if(d < closestDist){ closestDist = d; closest = el; }
+        });
+        if(closest && closestDist < 100){
+          var to = parseInt(closest.dataset.imgIdx);
+          var newImgs = _costumeImgs.slice();
+          var moved = newImgs.splice(draggingIdx, 1)[0];
+          newImgs.splice(to, 0, moved);
+          _costumeImgs = newImgs;
+          renderCostumeImgPreview();
+        }
+        draggingIdx = null;
+      }
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+    });
+
+    wrap.appendChild(item);
+  });
+}
+
+// ===== トリミング =====
+var _cropScale = 1, _cropOffsetX = 0, _cropOffsetY = 0, _cropDragging = false, _cropLastX = 0, _cropLastY = 0, _pendingCropFiles = [];
+
+function openCrop(file){
+  _cropScale = 1; _cropOffsetX = 0; _cropOffsetY = 0;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = document.getElementById('crop-img');
+    img.onload = function(){
+      var container = document.getElementById('crop-container');
+      var cw = container.offsetWidth;
+      var minScale = cw / Math.min(img.naturalWidth, img.naturalHeight);
+      _cropScale = minScale;
+      var si = document.getElementById('crop-scale');
+      si.min = minScale; si.max = minScale * 3; si.value = minScale;
+      updateCropImg();
+    };
+    img.src = e.target.result;
+    document.getElementById('crop-modal').style.display = 'flex';
+  };
+  reader.readAsDataURL(file);
+}
+function updateCropImg(){
+  var img = document.getElementById('crop-img');
+  var container = document.getElementById('crop-container');
+  var cw = container.offsetWidth;
+  var w = img.naturalWidth * _cropScale;
+  var h = img.naturalHeight * _cropScale;
+  _cropOffsetX = Math.min(0, Math.max(_cropOffsetX, cw - w));
+  _cropOffsetY = Math.min(0, Math.max(_cropOffsetY, cw - h));
+  img.style.width = w + 'px'; img.style.height = h + 'px';
+  img.style.left = _cropOffsetX + 'px'; img.style.top = _cropOffsetY + 'px';
+}
+function applyCrop(){
+  var img = document.getElementById('crop-img');
+  var container = document.getElementById('crop-container');
+  var cw = container.offsetWidth;
+  var canvas = document.createElement('canvas');
+  canvas.width = 600; canvas.height = 600;
+  var ctx = canvas.getContext('2d');
+  var sx = -_cropOffsetX / _cropScale;
+  var sy = -_cropOffsetY / _cropScale;
+  var sw = cw / _cropScale;
+  var sh = cw / _cropScale;
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 600, 600);
+  var url = canvas.toDataURL('image/jpeg', 0.9);
+  _costumeImgs.push({ url: url, isNew: true });
+  renderCostumeImgPreview();
+  document.getElementById('crop-modal').style.display = 'none';
+  if(_pendingCropFiles.length > 0){ openCrop(_pendingCropFiles.shift()); }
+}
+function cancelCrop(){
+  _pendingCropFiles = [];
+  document.getElementById('crop-modal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  var container = document.getElementById('crop-container');
+  if(container){
+    container.addEventListener('mousedown', function(e){ _cropDragging = true; _cropLastX = e.clientX; _cropLastY = e.clientY; e.preventDefault(); });
+    document.addEventListener('mousemove', function(e){
+      if(!_cropDragging) return;
+      _cropOffsetX += e.clientX - _cropLastX; _cropOffsetY += e.clientY - _cropLastY;
+      _cropLastX = e.clientX; _cropLastY = e.clientY; updateCropImg();
+    });
+    document.addEventListener('mouseup', function(){ _cropDragging = false; });
+    var si = document.getElementById('crop-scale');
+    if(si) si.addEventListener('input', function(){ _cropScale = parseFloat(this.value); updateCropImg(); });
+  }
+
+  loadAndRenderCostumes();
+});
+</script>
+</body>
+</html>
