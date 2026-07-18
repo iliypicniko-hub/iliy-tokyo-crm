@@ -1350,6 +1350,35 @@ function submitToGAS(response){
   });
 }
 
+// 画像を長辺1920px・JPEG品質0.85程度に圧縮してから送る（送信時間短縮のため）
+function compressImageFile(file, maxDim, quality){
+  maxDim = maxDim || 1920;
+  quality = quality || 0.85;
+  return new Promise(function(resolve){
+    const objUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = function(){
+      let w = img.naturalWidth, h = img.naturalHeight;
+      if (w > maxDim || h > maxDim) {
+        if (w >= h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+        else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(objUrl);
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      resolve(dataUrl.split(',')[1]);
+    };
+    img.onerror = function(){
+      // 万一デコードに失敗したら、圧縮せず元ファイルをそのまま使う
+      URL.revokeObjectURL(objUrl);
+      fileToBase64(file).then(resolve);
+    };
+    img.src = objUrl;
+  });
+}
+
 function fileToBase64(file){
   return new Promise(function(resolve, reject){
     const reader = new FileReader();
@@ -1363,33 +1392,31 @@ function fileToBase64(file){
   });
 }
 
+// 同じ種類（本人写真／衣装写真）の画像は、圧縮してから「まとめて1回」のリクエストで送る
 function uploadPhotosToGAS(token, boxNum, kind){
   const files = storedFiles[boxNum] || [];
   if(!files.length) return Promise.resolve();
-  let chain = Promise.resolve();
-  files.forEach(function(file){
-    chain = chain.then(function(){
-      return fileToBase64(file).then(function(base64){
-        return fetch(GAS_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({
-            action: 'uploadPhoto',
-            payload: {
-              token: token,
-              kind: kind,
-              filename: file.name,
-              mimeType: file.type,
-              base64: base64
-            }
-          })
-        });
-      }).catch(function(err){
-        console.error('写真アップロード失敗:', err);
-      });
+
+  return Promise.all(files.map(function(file){
+    return compressImageFile(file).then(function(base64){
+      return {
+        base64: base64,
+        mimeType: 'image/jpeg',
+        filename: file.name.replace(/\.[^.]+$/, '') + '.jpg'
+      };
     });
+  })).then(function(images){
+    return fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'uploadPhotos',
+        payload: { token: token, kind: kind, images: images }
+      })
+    });
+  }).catch(function(err){
+    console.error('写真アップロード失敗:', err);
   });
-  return chain;
 }
 
 document.getElementById('f').addEventListener('submit', async function(e){
