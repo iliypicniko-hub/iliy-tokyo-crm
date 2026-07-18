@@ -59,6 +59,9 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
 .btn-row{display:flex;gap:1rem;justify-content:center;padding-top:1.5rem;border-top:0.5px solid var(--line);margin-top:1.5rem;}
 .btn-primary{background:var(--main);color:#fff;border:none;padding:0.9rem 2.5rem;font-size:14px;letter-spacing:0.1em;border-radius:2px;cursor:pointer;transition:background 0.2s;font-family:'Noto Sans JP',sans-serif;}
 .btn-primary:hover{background:var(--main-dark);}
+.btn-primary.is-loading{position:relative;overflow:hidden;}
+.btn-primary.is-loading .loading-bar{position:absolute;left:0;bottom:0;height:3px;width:40%;background:rgba(255,255,255,0.85);animation:btn-bar-move 1.2s ease-in-out infinite;}
+@keyframes btn-bar-move{0%{left:-40%;}100%{left:100%;}}
 .btn-secondary{background:#fff;color:var(--main);border:0.5px solid var(--main);padding:0.9rem 1.75rem;font-size:14px;letter-spacing:0.05em;border-radius:2px;cursor:pointer;transition:all 0.2s;font-family:'Noto Sans JP',sans-serif;}
 .btn-secondary:hover{background:var(--main-lighter);}
 .page{display:none;}
@@ -1426,8 +1429,9 @@ document.getElementById('f').addEventListener('submit', async function(e){
   if (submitBtn) {
     if (submitBtn.disabled) return; // 既に送信処理中なら何もしない
     submitBtn.disabled = true;
-    submitBtn.textContent = '送信中...';
-    submitBtn.style.opacity = '0.6';
+    submitBtn.innerHTML = '送信中...<span class="loading-bar"></span>';
+    submitBtn.classList.add('is-loading');
+    submitBtn.style.opacity = '0.85';
     submitBtn.style.cursor = 'not-allowed';
   }
   try {
