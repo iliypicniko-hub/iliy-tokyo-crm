@@ -132,6 +132,11 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
   #flower-type-chips{flex-wrap:nowrap;gap:0.5rem;}
   #flower-type-chips .chip{flex:1;padding:0.6rem 0.4rem;font-size:12px;justify-content:center;text-align:center;}
 }
+/* 生花の受付曜日 */
+.option-card.is-disabled{opacity:0.45;cursor:not-allowed;}
+.option-card.is-disabled input{cursor:not-allowed;}
+.flower-notice{font-size:12px;color:#8a5a2b;background:#fbf4ea;border:0.5px solid #e6cfa8;border-radius:6px;padding:0.7rem 0.9rem;margin-top:0.75rem;line-height:1.6;display:none;}
+.flower-notice.show{display:block;}
 </style>
 </head>
 <body>
@@ -373,11 +378,12 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
     <div class="sec-label" style="margin-top:0;">フラワーオプション🌷<span class="req" style="font-size:12px;letter-spacing:0;">*</span></div>
     <div class="detail-info">
       <p>提携のフラワーショップ rih（リフ）にて、撮影用の花束をご注文いただけます。季節のお花をご家族それぞれに合わせてお作りいたします。</p>
-      <p>季節の花束：¥5,500（税込）　／　装花アレンジメント：¥16,500（税込）</p>
-      <p>※お花の内容は基本お任せとなります。<br>※お花の仕入れ等の関係で、1週間ほど前までにご予約ください。<br>※過去のサンプルはInstagramに掲載しております。<br>※生花や造花のお持ち込みはできかねますので、お花との撮影をご希望の場合はこちらの追加をお願いいたします。</p>
+      <p>生花ミニブーケ：¥5,500（税込）　／　生花アレンジメント（2個）：¥27,500（税込）</p>
+      <p>※生花オプションは、土・日・月・祝日のご撮影のみお受けしております。<br>※お花の内容は基本お任せとなります。<br>※お花の仕入れ等の関係で、1週間ほど前までにご予約ください。<br>※過去のサンプルはInstagramに掲載しております。<br>※生花や造花のお持ち込みはできかねますので、お花との撮影をご希望の場合はこちらの追加をお願いいたします。</p>
     </div>
-    <label class="option-card" style="margin-top:2rem;"><input type="radio" name="flower" value="yes" onchange="updateFlow()"><span class="option-card-label">フラワーオプションを希望する</span></label>
+    <label class="option-card" id="flower-yes-card" style="margin-top:2rem;"><input type="radio" name="flower" value="yes" onchange="updateFlow()"><span class="option-card-label">フラワーオプションを希望する</span></label>
     <label class="option-card"><input type="radio" name="flower" value="no" onchange="updateFlow()"><span class="option-card-label">希望しない</span></label>
+    <div class="flower-notice" id="flower-unavailable"></div>
   </div>
 
   <div class="field" style="margin-top:2rem;">
@@ -412,8 +418,8 @@ textarea{min-height:160px;resize:vertical;line-height:1.6;}
   <div class="field">
     <label>種類<span class="req">*</span></label>
     <div class="chips" id="flower-type-chips">
-      <label class="chip"><input type="radio" name="flower_type"> 季節の花束　<span style="font-size:11px;color:var(--ink3);">¥5,500（税込）</span></label>
-      <label class="chip"><input type="radio" name="flower_type"> 装花アレンジメント　<span style="font-size:11px;color:var(--ink3);">¥16,500（税込）</span></label>
+      <label class="chip"><input type="radio" name="flower_type"> 生花ミニブーケ　<span style="font-size:11px;color:var(--ink3);">¥5,500（税込）</span></label>
+      <label class="chip"><input type="radio" name="flower_type"> 生花アレンジメント（2個）　<span style="font-size:11px;color:var(--ink3);">¥27,500（税込）</span></label>
     </div>
   </div>
 
@@ -792,6 +798,11 @@ function validatePage(pageId){
       let err=wrap.querySelector('.v-err-chips');
       if(!err){err=document.createElement('p');err.className='v-err-chips';err.style.cssText='font-size:11px;color:#c0392b;margin-top:6px;';wrap.appendChild(err);}
       err.textContent='フラワーオプションを選択してください';ok=false;
+    } else if(wantsFlower() && !freshAvailable()){
+      const wrap=document.querySelector('input[name="flower"]').closest('.field');
+      let err=wrap.querySelector('.v-err-chips');
+      if(!err){err=document.createElement('p');err.className='v-err-chips';err.style.cssText='font-size:11px;color:#c0392b;margin-top:6px;';wrap.appendChild(err);}
+      err.textContent='生花オプションは土・日・月・祝日のご撮影のみお受けしております';ok=false;
     } else {
       const e=document.querySelector('input[name="flower"]').closest('.field').querySelector('.v-err-chips');
       if(e)e.remove();
@@ -850,6 +861,42 @@ function scrollToFirstError(){
   if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
 }
 function wantsFlower(){ return document.querySelector('input[name="flower"][value="yes"]')?.checked; }
+
+// ===== 生花の受付曜日（土・日・月・祝日のみ）=====
+const JP_HOLIDAYS=new Set([
+  '2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-03','2026-05-04','2026-05-05','2026-05-06',
+  '2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23',
+  '2027-01-01','2027-01-11','2027-02-11','2027-02-23','2027-03-21','2027-03-22','2027-04-29','2027-05-03','2027-05-04','2027-05-05',
+  '2027-07-19','2027-08-11','2027-09-20','2027-09-23','2027-10-11','2027-11-03','2027-11-23'
+]);
+function freshAvailable(){
+  const v=document.getElementById('booking_date')?.value;
+  if(!v) return true;
+  const dow=new Date(v+'T00:00:00').getDay(); // 0=日,1=月,6=土
+  return dow===0||dow===1||dow===6||JP_HOLIDAYS.has(v);
+}
+function refreshFlowerAvailability(){
+  const card=document.getElementById('flower-yes-card');
+  const note=document.getElementById('flower-unavailable');
+  if(!card) return;
+  const ok=freshAvailable();
+  const inp=card.querySelector('input');
+  card.classList.toggle('is-disabled',!ok);
+  inp.disabled=!ok;
+  if(!ok){
+    const v=document.getElementById('booking_date').value;
+    const d=new Date(v+'T00:00:00');
+    note.textContent=`ご撮影日（${d.getMonth()+1}/${d.getDate()}・${'日月火水木金土'[d.getDay()]}）は生花のご用意ができかねます。生花オプションは、土・日・月・祝日のご撮影のみお受けしております。`;
+    note.classList.add('show');
+    if(inp.checked){inp.checked=false;updateFlow();}
+  } else {
+    note.classList.remove('show');
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  refreshFlowerAvailability();
+  document.getElementById('booking_date')?.addEventListener('change',refreshFlowerAvailability);
+});
 const _origAP=activatePage;
 function wantsRental(){ return document.querySelector('input[name="rental"][value="yes"]')?.checked; }
 
@@ -878,6 +925,7 @@ function activatePage(pageId){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById(pageId).classList.add('active');
   if(pageId==='page4') setTimeout(renderCostumes,10);
+  if(pageId==='page2') refreshFlowerAvailability();
   const flow=getFlow();
   const idx=flow.indexOf(pageId);
   const progMap={'page1':'prog-1','page2':'prog-2','page3':'prog-3','page4':'prog-4','page-last':'prog-last'};
